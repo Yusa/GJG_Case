@@ -10,4 +10,4 @@ class User(models.Model):
 
 	def __str__(self):
 		# Defined for printing Users
-		return f"{self.display_name} - {self.score} - {self.rank} - {self.country_code}"
+		return f"{self.display_name} - {self.points} - {self.rank} - {self.country}"

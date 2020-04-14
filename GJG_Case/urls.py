@@ -14,8 +14,8 @@ urlpatterns = [
     re_path(r'user/profile/(?P<guid>([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})|)', views.UserListNewView.as_view()), # Works with GET request
     path('leaderboard/', views.LeaderboardView.as_view()), # Works with GET request    
     path('leaderboard/<country_code>/', views.LeaderboardView.as_view()), # Works with GET request
+	path('score/submit/', views.ScoreView.as_view()), # Works with POST request
 
-	#path('score/submit/', views.ScoreView.as_view()), # Works with POST request
     #path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 

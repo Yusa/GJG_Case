@@ -1,10 +1,6 @@
 from rest_framework import serializers
 from .models import User
-
-# class UserSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['url', 'username', 'email', 'groups']
+from django.db import connection
 
 
 class LeaderboardSerializer(serializers.ModelSerializer):
@@ -53,3 +49,33 @@ class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
 		fields = ('display_name', 'points', 'rank', 'user_id')
+
+
+
+class ScoreSubmitSerializer(serializers.ModelSerializer):
+	user_id = serializers.CharField(required=True, allow_blank=False, max_length=36)
+	score_worth = serializers.IntegerField(required=True)
+	timestamp = serializers.IntegerField(required=True)
+
+	def update(self, instance, validated_data):
+		"""
+		Update and return an existing `User` instance, given the validated data.
+		"""
+		instance.points += validated_data.get('score_worth', instance.points)
+		count = User.objects.filter(points__lt=instance.points, rank__lt=instance.rank).count()
+
+		# Raw SQL query is used to change every score in one query 
+		# and avoid mass query for changing every users rank 
+		with connection.cursor() as cursor:
+			cursor.execute("""UPDATE scoreboardapi_user
+										SET rank = rank + 1
+										WHERE points < %s AND rank < %s""", 
+										[instance.points, instance.rank])
+		
+		instance.rank -= count
+		instance.save()
+		return instance
+
+	class Meta:
+		model = User
+		fields = ('user_id','score_worth', 'timestamp')

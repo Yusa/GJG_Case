@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from django.db import IntegrityError
+import sys, traceback
 
 # Create your views here.
-from django.views import View
-from GJG_Case.ScoreboardApi.serializers import UserProfileSerializer, LeaderboardSerializer
+from GJG_Case.ScoreboardApi.serializers import UserProfileSerializer, LeaderboardSerializer, ScoreSubmitSerializer
 from GJG_Case.ScoreboardApi.models import User
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -45,11 +44,11 @@ class UserListNewView(APIView):
             else:
                 if settings.DEBUG:
                     print("Integrity error:", e)
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             if settings.DEBUG:
                 print(f"Exception in {__name__}: {e}")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Unknown"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LeaderboardView(APIView):
@@ -74,6 +73,48 @@ class LeaderboardView(APIView):
         except Exception as e:
             if settings.DEBUG:
                 print(f"Exceptin in {__name__}: {e}")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Unknown"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class ScoreView(APIView):
+    def post(self, request, format=None):
+        try:
+            if "user_id" in request.data.keys():
+                user = User.objects.get(user_id=request.data["user_id"])
+                serializer = ScoreSubmitSerializer(user, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({"result":"1"}, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"error": "user_id is not given."}, status=status.HTTP_400_BAD_REQUEST)        
+        except Exception as e:
+            if settings.DEBUG:
+                print(f"Exceptin in {__name__}: {e}")
+                #traceback.print_exc(file=sys.stdout)
+            if "matching query does not exist" in str(e):
+               return Response({"error":"User with given user_id does not exists."}, status=status.HTTP_400_BAD_REQUEST, content_type=None)               
+            return Response({"error": "Unknown"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class UserCreateBulkView(APIView):
+    def post(self, request, format=None):
+        try:
+            serializer = UserProfileSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"result":"1"}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError as e:
+            if 'unique constraint' in str(e).lower():
+                return Response({"error":"User already exists."}, status=status.HTTP_400_BAD_REQUEST, content_type=None)
+            else:
+                if settings.DEBUG:
+                    print("Integrity error:", e)
+                return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            if settings.DEBUG:
+                print(f"Exception in {__name__}: {e}")
+            return Response({"error": "Unknown"}, status=status.HTTP_400_BAD_REQUEST)
