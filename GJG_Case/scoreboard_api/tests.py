@@ -2,8 +2,8 @@ from django.test import TestCase
 
 # Create your tests here.
 from rest_framework.test import APIRequestFactory
-from GJG_Case.ScoreboardApi.models import User
-from GJG_Case.ScoreboardApi.views import UserListNewView, LeaderboardView, ScoreView
+from GJG_Case.scoreboard_api.models import User
+from GJG_Case.scoreboard_api.views import UserListNewView, LeaderboardView, ScoreView
 import json
 
 class UserCreateTestCase(TestCase):
@@ -211,7 +211,7 @@ class LeaderboardTestCase(TestCase):
 		response = view(request)
 		response.render()
 		assert response.status_code == 200
-		expected = [{"display_name":"Karl","points":1950,"rank":1,"country":"de"},{"display_name":"Friedrich","points":1930,"rank":2,"country":"de"},{"display_name":"Ilyic","points":1750,"rank":3,"country":"ru"},{"display_name":"Mahir","points":995,"rank":4,"country":"tr"},{"display_name":"Robespierre","points":502,"rank":5,"country":"fr"}]
+		expected = {'count': 5, 'next': None, 'previous': None, 'results': [{'display_name': 'Karl', 'points': 1950, 'rank': 1, 'country': 'de'}, {'display_name': 'Friedrich', 'points': 1930, 'rank': 2, 'country': 'de'}, {'display_name': 'Ilyic', 'points': 1750, 'rank': 3, 'country': 'ru'}, {'display_name': 'Mahir', 'points': 995, 'rank': 4, 'country': 'tr'}, {'display_name': 'Robespierre', 'points': 502, 'rank': 5, 'country': 'fr'}]}
 		assert json.loads(response.content) == expected
 		print("Leaderboard Case 1 Successful")
 
@@ -224,7 +224,7 @@ class LeaderboardTestCase(TestCase):
 		response = view(request, "de")
 		response.render()
 		assert response.status_code == 200
-		assert json.loads(response.content) == [{"display_name":"Karl","points":1950,"rank":1,"country":"de"},{"display_name":"Friedrich","points":1930,"rank":2,"country":"de"}]
+		assert json.loads(response.content) == {'count': 2, 'next': None, 'previous': None, 'results': [{'display_name': 'Karl', 'points': 1950, 'rank': 1, 'country': 'de'}, {'display_name': 'Friedrich', 'points': 1930, 'rank': 2, 'country': 'de'}]}
 		print("Leaderboard Case 2 Successful")
 
 
@@ -294,6 +294,20 @@ class ScoreSubmitTestCase(TestCase):
 		response = view(request, user1['user_id'])
 		assert response.status_code == 200
 		assert response.data == user1
+
+		user2 = {
+					"display_name":"Karl",
+					"rank":2,
+					"points":1950,
+					"user_id":"05050f82-b8b9-470c-a2d7-31311c18a679"
+				}
+
+		request = factory.get(f'/user/profile/{user2["user_id"]}')
+		view = UserListNewView.as_view()
+		response = view(request, user2['user_id'])
+		assert response.status_code == 200
+		assert response.data == user2		
+
 		print("ScoreSubmit Case 1 Successful")
 
 

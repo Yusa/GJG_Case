@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'GJG_Case.ScoreboardApi',
+    'GJG_Case.scoreboard_api',
 ]
 
 MIDDLEWARE = [
@@ -75,12 +75,18 @@ WSGI_APPLICATION = 'GJG_Case.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'scoreboard_db',
+        'USER': 'scoreboard_user',
+        'PASSWORD': open(f"{os.path.dirname(os.path.abspath(__file__))}/secret.conf").read().strip(),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
@@ -125,7 +131,7 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 10
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    'PAGE_SIZE': 100
 }
