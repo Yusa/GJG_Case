@@ -8,7 +8,7 @@
 ##### Ubuntu:
 
 ```
-$ sudo apt-get install postgresql postgresql-contrib
+$ sudo apt-get install postgresql postgresql-contrib postgresql-server-dev-all
 
 ```
 
@@ -94,7 +94,7 @@ $ python manage.py migrate
 Run the server:
 
 ```
-$ python manage.py runserver
+$ python manage.py runserver 0.0.0.0:8000
 ```
 
 
