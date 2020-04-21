@@ -53,6 +53,12 @@ $ virtualenv --python=python3 venv-GJG
 $ source ./venv-GJG/bin/activate
 ```
 
+Clone the project:
+```
+$ git clone https://github.com/Yusa/GJG_Case.git
+$ cd GJG_Case
+```
+
 Installing libraries:
 ```
 $ pip install -r requirements.txt
