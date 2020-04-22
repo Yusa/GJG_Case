@@ -164,7 +164,7 @@ user = {
 	"rank":2,
 	"points":1930,
 	"user_id":"63afa900-c978-43fa-8d6b-9f79aa9b0aee",
-	"country":"DE"
+	"country":"de"
 }
 
 r = requests.post(uri, data=json.dumps(user), headers=headers)
