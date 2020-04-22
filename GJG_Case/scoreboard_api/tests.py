@@ -151,7 +151,7 @@ class UserProfileTestCase(TestCase):
 		User.objects.create(display_name="Robespierre", rank=5, points=502, user_id="db59d4b2-8a7b-46c1-9397-10f2af995bc2" ,country="FR")
 
 
-	def test_user_create_success(self):
+	def test_user_profile_success(self):
 		# Trying successful get profile operation
 		factory = APIRequestFactory()
 		user1 = {
@@ -168,7 +168,7 @@ class UserProfileTestCase(TestCase):
 		print("UserProfile Case 1 Successful")
 
 
-	def test_user_create_fail1(self):
+	def test_user_profile_fail1(self):
 		# Trying to get a user profile with non-existing user_id
 		factory = APIRequestFactory()
 		user_id = "ffffffff-1111-4444-aaaa-aaaaaaaaaaaa"
@@ -180,7 +180,7 @@ class UserProfileTestCase(TestCase):
 		print("UserProfile Case 2 Successful")
 
 
-	def test_user_create_fail2(self):
+	def test_user_profile_fail2(self):
 		# Trying to get user profile without giving user_id
 		factory = APIRequestFactory()
 		request = factory.get(f'/user/profile/')
