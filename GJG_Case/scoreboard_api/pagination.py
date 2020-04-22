@@ -30,7 +30,11 @@ class CustomPaginator(Paginator):
 								offset %s rows
 								FETCH NEXT %s rows only
 								"""
-			res = User.objects.raw(query_str, [(self.num_pages - number) * self.per_page, self.per_page])[::-1]
+			amount = self.per_page
+			if self.num_pages == number:
+				amount = self.count % self.per_page
+				self.page_size = amount
+			res = User.objects.raw(query_str, [(self.num_pages - number) * self.per_page, amount])[::-1]
 		return self._get_page(res, number, self)
 
 

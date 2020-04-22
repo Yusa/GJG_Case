@@ -132,6 +132,12 @@ Then the script can be edited to adjust amoun of users to be created and how man
 $ python db_populater.py
 ```
 
+It is creating the user data randomly and to test following endpoints we will need GUID's.
+- /score/submit/
+- /user/profile/
+
+Thus it is writing all the created user's data to file **out.log**. GUIDs can be retrieved from this file to test the afore-mentioned endpoints. 
+
 #### Tests
 
 There are unit tests for each view and tests can be run with the following command:
